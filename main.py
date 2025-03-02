@@ -259,6 +259,189 @@ class InterviewQuizApp:
                     widget.pack_forget()
             self.answer_button.config(state=tk.NORMAL)
 
+    def show_answer_screen(self):
+        if self.timer_id:
+            self.root.after_cancel(self.timer_id)
+            self.timer_id = None
+        
+        self.clear_main_frame()
+        
+        title_label = tk.Label(self.main_frame, text="回答入力画面", font=("Helvetica", 16, "bold"))
+        title_label.pack(pady=10)
+        
+        card_frame = tk.Frame(self.main_frame, bd=2, relief=tk.GROOVE, bg="white")
+        card_frame.pack(fill=tk.BOTH, expand=True, padx=40, pady=20)
+        
+        question_block = tk.Frame(card_frame, bg="white")
+        question_block.pack(fill=tk.X, padx=20, pady=10)
+        
+        question_label = tk.Label(question_block, text="質問内容（複製用）", bg="#F0F0F0", 
+                               font=("Helvetica", 12), width=50, anchor="w", padx=10, pady=5)
+        question_label.pack(fill=tk.X)
+        
+        question_content = tk.Label(question_block, text=self.current_quiz["question"], 
+                                 font=("Helvetica", 12), wraplength=500, bg="white")
+        question_content.pack(pady=5, fill=tk.X)
+        
+        answer_block = tk.Frame(card_frame, bg="white")
+        answer_block.pack(fill=tk.X, padx=20, pady=10)
+        
+        answer_label = tk.Label(answer_block, text="回答入力エリア", bg="#F0F0F0",
+                             font=("Helvetica", 12), width=50, anchor="w", padx=10, pady=5)
+        answer_label.pack(fill=tk.X)
+        
+        self.answer_text = scrolledtext.ScrolledText(answer_block, width=50, height=8)
+        self.answer_text.pack(pady=10, fill=tk.BOTH, expand=True)
+        
+        timer_block = tk.Frame(card_frame, bg="white")
+        timer_block.pack(fill=tk.X, padx=20, pady=10)
+        
+        timer_label = tk.Label(timer_block, text="残り時間", bg="#F0F0F0",
+                            font=("Helvetica", 12), width=50, anchor="w", padx=10, pady=5)
+        timer_label.pack(fill=tk.X)
+        
+        self.answer_timer_label = tk.Label(timer_block, text="60秒", fg="red", bg="white")
+        self.answer_timer_label.pack(pady=5)
+        
+        button_block = tk.Frame(card_frame, bg="white")
+        button_block.pack(fill=tk.X, padx=20, pady=10)
+        
+        submit_button = tk.Button(button_block, text="回答を送信", bg="#4169E1", fg="white",
+                               font=("Helvetica", 12, "bold"), width=20, height=1,
+                               command=self.evaluate_answer)
+        submit_button.pack(pady=10)
+        
+        self.timer_seconds = 60
+        self.update_answer_timer()
+
+    def update_answer_timer(self):
+        if self.timer_seconds > 0:
+            self.answer_timer_label.config(text=f"{self.timer_seconds}秒")
+            self.timer_seconds -= 1
+            self.timer_id = self.root.after(1000, self.update_answer_timer)
+        else:
+            messagebox.showinfo("時間切れ", "回答時間が終了しました")
+            self.evaluate_answer()
+    
+    def evaluate_answer(self):
+        if self.timer_id:
+            self.root.after_cancel(self.timer_id)
+            self.timer_id = None
+        
+        answer_text = self.answer_text.get("1.0", tk.END).strip().lower()
+        
+        keyword_count = 0
+        used_keywords = []
+        
+        for keyword in self.current_quiz["keywords"]:
+            if keyword.lower() in answer_text:
+                keyword_count += 1
+                used_keywords.append(keyword)
+        
+        match_rate = (keyword_count / len(self.current_quiz["keywords"])) * 100
+        
+        self.show_result_screen(match_rate, used_keywords)
+    
+    def show_result_screen(self, match_rate, used_keywords):
+        self.clear_main_frame()
+        
+        title_label = tk.Label(self.main_frame, text="結果・フィードバック画面", font=("Helvetica", 16, "bold"))
+        title_label.pack(pady=10)
+        
+        card_frame = tk.Frame(self.main_frame, bd=2, relief=tk.GROOVE, bg="white")
+        card_frame.pack(fill=tk.BOTH, expand=True, padx=40, pady=20)
+        
+        summary_block = tk.Frame(card_frame, bg="white")
+        summary_block.pack(fill=tk.X, padx=20, pady=10)
+        
+        summary_label = tk.Label(summary_block, text="質問と回答の要約", bg="#F0F0F0", 
+                              font=("Helvetica", 12), width=50, anchor="w", padx=10, pady=5)
+        summary_label.pack(fill=tk.X)
+        
+        question_text = f"質問: {self.current_quiz['question']}\n"
+        question_content = tk.Label(summary_block, text=question_text, 
+                                 wraplength=500, bg="white", justify="left", anchor="w")
+        question_content.pack(fill=tk.X, pady=5, padx=5)
+        
+        score_feedback_row = tk.Frame(card_frame, bg="white")
+        score_feedback_row.pack(fill=tk.X, padx=20, pady=10)
+        score_feedback_row.grid_columnconfigure(0, weight=1)
+        score_feedback_row.grid_columnconfigure(1, weight=2)
+        
+        score_block = tk.Frame(score_feedback_row, bg="white", bd=1, relief=tk.GROOVE)
+        score_block.grid(row=0, column=0, padx=5, sticky="nsew")
+        
+        score_title = tk.Label(score_block, text="スコア", bg="#F0F0F0", 
+                            font=("Helvetica", 12), anchor="w", padx=10, pady=5)
+        score_title.pack(fill=tk.X)
+        
+        score_value = tk.Label(score_block, text=f"{match_rate:.1f}%", 
+                            font=("Helvetica", 18, "bold"), fg="blue", bg="white")
+        score_value.pack(pady=20, fill=tk.X)
+        
+        feedback_block = tk.Frame(score_feedback_row, bg="white", bd=1, relief=tk.GROOVE)
+        feedback_block.grid(row=0, column=1, padx=5, sticky="nsew")
+        
+        feedback_title = tk.Label(feedback_block, text="フィードバックコメント", bg="#F0F0F0", 
+                               font=("Helvetica", 12), anchor="w", padx=10, pady=5)
+        feedback_title.pack(fill=tk.X)
+        
+        if match_rate >= 80:
+            feedback_text = "素晴らしい！多くのキーワードを使用できています。"
+        elif match_rate >= 60:
+            feedback_text = "良い回答です。もう少しキーワードを意識しましょう。"
+        elif match_rate >= 40:
+            feedback_text = "まずまずの回答です。もっとキーワードを使うよう意識しましょう。"
+        else:
+            feedback_text = "キーワードの使用が少なめです。意識して練習しましょう。"
+        
+        feedback_content = tk.Label(feedback_block, text=feedback_text, 
+                                 wraplength=250, bg="white", justify="left")
+        feedback_content.pack(pady=10, padx=10, fill=tk.X)
+        
+        keywords_block = tk.Frame(card_frame, bg="white")
+        keywords_block.pack(fill=tk.X, padx=20, pady=10)
+        
+        keywords_label = tk.Label(keywords_block, text="使用キーワードハイライト", bg="#F0F0F0", 
+                               font=("Helvetica", 12), width=50, anchor="w", padx=10, pady=5)
+        keywords_label.pack(fill=tk.X)
+        
+        keywords_content = tk.Frame(keywords_block, bg="white")
+        keywords_content.pack(fill=tk.X, pady=5)
+        
+        used_text = "使用したキーワード: "
+        if used_keywords:
+            used_text += ", ".join(used_keywords)
+        else:
+            used_text += "なし"
+        
+        used_keywords_label = tk.Label(keywords_content, text=used_text, fg="blue", 
+                                    wraplength=500, bg="white", justify="left", anchor="w")
+        used_keywords_label.pack(fill=tk.X, pady=5, padx=5)
+        
+        unused_keywords = [k for k in self.current_quiz["keywords"] if k not in used_keywords]
+        unused_text = "未使用キーワード: "
+        if unused_keywords:
+            unused_text += ", ".join(unused_keywords)
+        else:
+            unused_text += "なし"
+        
+        unused_keywords_label = tk.Label(keywords_content, text=unused_text, fg="red", 
+                                     wraplength=500, bg="white", justify="left", anchor="w")
+        unused_keywords_label.pack(fill=tk.X, pady=5, padx=5)
+        
+        button_block = tk.Frame(card_frame, bg="white")
+        button_block.pack(fill=tk.X, padx=20, pady=10)
+        
+        next_button = tk.Button(button_block, text="次の問題へ", bg="#4169E1", fg="white",
+                             font=("Helvetica", 12, "bold"), width=20, height=1,
+                             command=self.start_quiz)
+        next_button.pack(pady=10)
+        
+        menu_link = tk.Label(button_block, text="メニューに戻る", fg="blue", cursor="hand2", bg="white")
+        menu_link.pack(pady=5)
+        menu_link.bind("<Button-1>", lambda e: self.show_start_screen())
+
             
 if __name__ == "__main__":
     root = tk.Tk()
