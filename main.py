@@ -10,7 +10,6 @@ class InterviewQuizApp:
         self.root = root
         self.root.title("面接対策クイズ")
         self.root.geometry("600x500")
-        self.root.resizable(False, False)
         
         self.current_user = {}
         self.quiz_data = []
@@ -311,7 +310,7 @@ class InterviewQuizApp:
                                command=self.evaluate_answer)
         submit_button.pack(pady=10)
         
-        self.timer_seconds = 60
+        self.timer_seconds = 180
         self.update_answer_timer()
 
     def update_answer_timer(self):
