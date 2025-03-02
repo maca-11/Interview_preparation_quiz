@@ -27,7 +27,6 @@ class InterviewQuizApp:
         self.show_start_screen()
         
     def initialize_data_files(self):
-        # クイズデータの初期化
         if not os.path.exists("quiz_data.json"):
             default_quiz_data = [
                 {
@@ -80,7 +79,33 @@ class InterviewQuizApp:
     def clear_main_frame(self):
         for widget in self.main_frame.winfo_children():
             widget.destroy()
-            
+    def show_start_screen(self):
+        self.clear_main_frame()
+        
+        title_label = tk.Label(self.main_frame, text="面接対策クイズ", font=("Helvetica", 20, "bold"))
+        title_label.pack(pady=20)
+        
+        description = """
+        このアプリは面接でのコミュニケーション能力を向上させるためのものです。
+        面接でよく聞かれる質問に対して、キーワードを意識しながら回答する練習ができます。
+        """
+        desc_label = tk.Label(self.main_frame, text=description, wraplength=400, justify="left")
+        desc_label.pack(pady=10)
+        
+        button_frame = tk.Frame(self.main_frame)
+        button_frame.pack(pady=20)
+        
+        profile_button = tk.Button(button_frame, text="プロフィール設定", width=20, height=2,
+                                  command=self.show_profile_screen)
+        profile_button.grid(row=0, column=0, padx=10, pady=10)
+        
+        start_button = tk.Button(button_frame, text="クイズ開始", width=20, height=2,
+                               command=self.start_quiz)
+        start_button.grid(row=0, column=1, padx=10, pady=10)
+        
+        exit_button = tk.Button(button_frame, text="終了", width=20, height=2,
+                              command=self.root.quit)
+        exit_button.grid(row=1, column=0, columnspan=2, padx=10, pady=10)           
             
 if __name__ == "__main__":
     root = tk.Tk()
