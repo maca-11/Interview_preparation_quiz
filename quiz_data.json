@@ -68,5 +68,45 @@
         ],
         "industry": "IT",
         "difficulty": "応用"
+    },
+    {
+        "id": 6,
+        "question": "チームで働く際に心がけていることは何ですか？",
+        "description": "協調性やコミュニケーション能力を問う質問です",
+        "keywords": ["協力", "コミュニケーション", "信頼", "役割分担", "チームワーク"],
+        "industry": "IT",
+        "difficulty": "基本"
+    },
+    {
+        "id": 7,
+        "question": "最新の技術トレンドについてどう思いますか？",
+        "description": "技術への関心度や洞察力を問う質問です",
+        "keywords": ["技術", "トレンド", "革新", "影響", "適応"],
+        "industry": "IT",
+        "difficulty": "基本"
+    },
+    {
+        "id": 8,
+        "question": "困難なプロジェクトをどのように乗り越えましたか？",
+        "description": "問題解決能力や粘り強さを問う質問です",
+        "keywords": ["課題", "解決", "工夫", "協力", "成果"],
+        "industry": "IT",
+        "difficulty": "応用"
+    },
+    {
+        "id": 9,
+        "question": "当社を選んだ理由を教えてください",
+        "description": "企業への理解や熱意を問う質問です",
+        "keywords": ["志望動機", "共感", "貢献", "ビジョン", "価値観"],
+        "industry": "IT",
+        "difficulty": "応用"
+    },
+    {
+        "id": 10,
+        "question": "今後のキャリア目標は何ですか？",
+        "description": "将来のビジョンや成長意欲を問う質問です",
+        "keywords": ["目標", "成長", "スキルアップ", "挑戦", "計画"],
+        "industry": "IT",
+        "difficulty": "応用"
     }
 ]
