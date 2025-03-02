@@ -106,6 +106,7 @@ class InterviewQuizApp:
         exit_button = tk.Button(button_frame, text="終了", width=20, height=2,
                               command=self.root.quit)
         exit_button.grid(row=1, column=0, columnspan=2, padx=10, pady=10)           
+
     def show_profile_screen(self):
         self.clear_main_frame()
         
@@ -147,6 +148,40 @@ class InterviewQuizApp:
         back_button = tk.Button(button_frame, text="戻る", width=15, height=2,
                              command=self.show_start_screen)
         back_button.grid(row=0, column=1, padx=10, pady=10)
+
+    def save_profile(self):
+        name = self.name_entry.get().strip()
+        if not name:
+            messagebox.showerror("エラー", "名前を入力してください")
+            return
+        
+        self.current_user = {
+            "name": name,
+            "industry": self.industry_var.get(),
+            "difficulty": self.difficulty_var.get()
+        }
+        
+        messagebox.showinfo("成功", "プロフィールを保存しました")
+        self.show_start_screen()  
+
+    def start_quiz(self):
+        if not hasattr(self, 'current_user') or not self.current_user:
+            self.current_user = {
+                "name": "ゲスト",
+                "industry": "IT",
+                "difficulty": "基本"
+            }
+        
+        filtered_quizzes = [q for q in self.quiz_data if q["industry"] == self.current_user["industry"] and
+                           q["difficulty"] == self.current_user["difficulty"]]
+        
+        if not filtered_quizzes:
+            messagebox.showerror("エラー", "条件に合うクイズがありません")
+            return
+        
+        self.current_quiz = random.choice(filtered_quizzes)
+        self.show_question_screen()
+
             
 if __name__ == "__main__":
     root = tk.Tk()
