@@ -181,6 +181,83 @@ class InterviewQuizApp:
         
         self.current_quiz = random.choice(filtered_quizzes)
         self.show_question_screen()
+        
+    def show_question_screen(self):
+        self.clear_main_frame()
+        
+        # タイトル
+        title_label = tk.Label(self.main_frame, text="問題表示画面", font=("Helvetica", 16, "bold"))
+        title_label.pack(pady=10)
+        
+        card_frame = tk.Frame(self.main_frame, bd=2, relief=tk.GROOVE, bg="white")
+        card_frame.pack(fill=tk.BOTH, expand=True, padx=40, pady=20)
+        
+        question_block = tk.Frame(card_frame, bg="white")
+        question_block.pack(fill=tk.X, padx=20, pady=10)
+        
+        question_label = tk.Label(question_block, text="面接官からの質問", bg="#F0F0F0", 
+                               font=("Helvetica", 12), width=50, anchor="w", padx=10, pady=5)
+        question_label.pack(fill=tk.X)
+        
+        question_content = tk.Label(question_block, text=self.current_quiz["question"], 
+                                 font=("Helvetica", 14), wraplength=500, bg="white", anchor="w")
+        question_content.pack(fill=tk.X, pady=5)
+        
+        desc_block = tk.Frame(card_frame, bg="#FFE4B5")
+        desc_block.pack(fill=tk.X, padx=20, pady=10)
+        
+        desc_label = tk.Label(desc_block, text="説明イメージ", 
+                           font=("Helvetica", 12), bg="#FFE4B5", anchor="center")
+        desc_label.pack(pady=5)
+        
+        desc_content = tk.Label(desc_block, text=self.current_quiz["description"],
+                             wraplength=500, bg="#FFE4B5", fg="black")
+        desc_content.pack(pady=10)
+        
+        keywords_block = tk.Frame(card_frame, bg="white")
+        keywords_block.pack(fill=tk.X, padx=20, pady=10)
+        
+        keywords_label = tk.Label(keywords_block, text="記憶すべきキーワード", bg="#F0F0F0",
+                               font=("Helvetica", 12), width=50, anchor="w", padx=10, pady=5)
+        keywords_label.pack(fill=tk.X)
+        
+        keywords_text = ", ".join(self.current_quiz["keywords"])
+        keywords_display = tk.Label(keywords_block, text=keywords_text, fg="blue", 
+                                 wraplength=500, bg="white")
+        keywords_display.pack(pady=5, fill=tk.X)
+        
+        timer_block = tk.Frame(card_frame, bg="white")
+        timer_block.pack(fill=tk.X, padx=20, pady=10)
+        
+        timer_label = tk.Label(timer_block, text="タイマー", bg="#F0F0F0",
+                            font=("Helvetica", 12), width=50, anchor="w", padx=10, pady=5)
+        timer_label.pack(fill=tk.X)
+        
+        self.timer_label = tk.Label(timer_block, text="キーワードを記憶してください (5秒)", 
+                                  fg="red", bg="white")
+        self.timer_label.pack(pady=5, fill=tk.X)
+        
+        button_block = tk.Frame(card_frame, bg="white")
+        button_block.pack(fill=tk.X, padx=20, pady=10)
+        
+        self.answer_button = tk.Button(button_block, text="回答する", bg="#4169E1", fg="white",
+                                     font=("Helvetica", 12, "bold"), width=20, height=1,
+                                     state=tk.DISABLED, command=self.show_answer_screen)
+        self.answer_button.pack(pady=10)
+        
+        self.timer_seconds = 5
+        self.update_timer()
+    def update_timer(self):
+        if self.timer_seconds > 0:
+            self.timer_label.config(text=f"キーワードを記憶してください ({self.timer_seconds}秒)")
+            self.timer_seconds -= 1
+            self.timer_id = self.root.after(1000, self.update_timer)
+        else:
+            self.timer_label.config(text="時間切れ！回答を始めてください")
+            for widget in self.main_frame.winfo_children():
+                if isinstance(widget, tk.Frame) and any(isinstance(child, tk.Label) and child.cget("fg") == "blue" for child in widget.winfo_children()):
+                    widget.pack_forget()
+            self.answer_button.config(state=tk.NORMAL)
 
             
 if __name__ == "__main__":
