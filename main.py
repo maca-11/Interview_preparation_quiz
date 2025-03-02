@@ -106,6 +106,47 @@ class InterviewQuizApp:
         exit_button = tk.Button(button_frame, text="終了", width=20, height=2,
                               command=self.root.quit)
         exit_button.grid(row=1, column=0, columnspan=2, padx=10, pady=10)           
+    def show_profile_screen(self):
+        self.clear_main_frame()
+        
+        title_label = tk.Label(self.main_frame, text="プロフィール設定", font=("Helvetica", 16, "bold"))
+        title_label.pack(pady=20)
+        
+        form_frame = tk.Frame(self.main_frame)
+        form_frame.pack(pady=10)
+        
+        name_label = tk.Label(form_frame, text="名前:")
+        name_label.grid(row=0, column=0, sticky="w", padx=10, pady=5)
+        self.name_entry = tk.Entry(form_frame, width=30)
+        self.name_entry.grid(row=0, column=1, padx=10, pady=5)
+        
+        industry_label = tk.Label(form_frame, text="業界:")
+        industry_label.grid(row=1, column=0, sticky="w", padx=10, pady=5)
+        self.industry_var = tk.StringVar()
+        industry_combo = ttk.Combobox(form_frame, textvariable=self.industry_var, width=27)
+        industry_combo['values'] = ("IT", "金融", "製造", "小売", "その他")
+        industry_combo.current(0)
+        industry_combo.grid(row=1, column=1, padx=10, pady=5)
+        
+        difficulty_label = tk.Label(form_frame, text="難易度:")
+        difficulty_label.grid(row=2, column=0, sticky="w", padx=10, pady=5)
+        self.difficulty_var = tk.StringVar()
+        self.difficulty_var.set("基本")
+        basic_radio = tk.Radiobutton(form_frame, text="基本", variable=self.difficulty_var, value="基本")
+        basic_radio.grid(row=2, column=1, sticky="w", padx=10, pady=5)
+        advanced_radio = tk.Radiobutton(form_frame, text="応用", variable=self.difficulty_var, value="応用")
+        advanced_radio.grid(row=3, column=1, sticky="w", padx=10, pady=5)
+        
+        button_frame = tk.Frame(self.main_frame)
+        button_frame.pack(pady=20)
+        
+        save_button = tk.Button(button_frame, text="保存", width=15, height=2,
+                              command=self.save_profile)
+        save_button.grid(row=0, column=0, padx=10, pady=10)
+        
+        back_button = tk.Button(button_frame, text="戻る", width=15, height=2,
+                             command=self.show_start_screen)
+        back_button.grid(row=0, column=1, padx=10, pady=10)
             
 if __name__ == "__main__":
     root = tk.Tk()
